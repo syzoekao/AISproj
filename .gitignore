@@ -5,7 +5,9 @@
 *.sublime-workspace
 *.sublime-project
 *.json
+.DS_Store
 
+.Rproj.user/
 data/
 results/
 include/
