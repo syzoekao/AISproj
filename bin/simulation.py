@@ -99,9 +99,9 @@ pre_res_ss = []
 
 bb = timeit.default_timer()
 
-
+'''
 for i in range(1, 101): 
-	tmp_param = np.array([0.13699835, 0.00780083, 0.02649427, 0.30544969, 0.20874079, 0.08939699, 0.20789656])
+	tmp_param = np.array([0.09489981, 0.00875689, 0.05023786, 0.10567982, 0.0426305 , 0.21202756, 0.04111906])
 
 	aa = timeit.default_timer()
 	ann_out, res_zm0, infest_zm0, tmp_suit_zm0, res_ss0, infest_ss0, tmp_suit_ss0 = \
@@ -117,7 +117,7 @@ for i in range(1, 101):
 
 pre_ann = np.array(pre_ann_out)
 print(np.mean(pre_ann, 0))
-
+'''
 
 for i in range(1, 101): 
 	print(i)
