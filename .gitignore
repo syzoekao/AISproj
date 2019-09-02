@@ -6,6 +6,7 @@
 *.sublime-project
 *.json
 .DS_Store
+*.R
 
 .Rproj.user/
 data/
@@ -22,12 +23,14 @@ ergm.pbs
 man/
 share/
 etc/
-lib/
+boater_gen_out/
 
 # exceptions
-!lib/python3.6/site-packages/UtilFunction.py
-!lib/python3.6/site-packages/AdapMCMC.py
-!bin/CreatNets.py
-!bin/RiskSimSelf.py
-!bin/simulation.py
-!bin/PostAnalysis.py
+!lib/
+lib/*
+!lib/python3.7/
+lib/python3.7/*
+!lib/python3.7/site-packages/
+lib/python3.7/site-packages/*
+!lib/python3.7/site-packages/AISsim/
+!lib/python3.7/site-packages/AISsim/tests/
