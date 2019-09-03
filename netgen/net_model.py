@@ -19,11 +19,11 @@ def model_performance(model, data_set, target, predict_names, pred_type, path, f
 	if pred_type == 'binary': 
 		y_pred = model.predict_proba(data_set)[:, 1]
 		x_vec0 = np.arange(0.2, 0.51, 0.01)
-		accuracy_vec = np.zeros(x_vec.shape[0])
-		sens_vec = np.zeros(x_vec.shape[0])
+		accuracy_vec = np.zeros(x_vec0.shape[0])
+		sens_vec = np.zeros(x_vec0.shape[0])
 
-		for x in range(x_vec.shape[0]): 
-			y_hat = 1 * (y_pred >= x_vec[x])
+		for x in range(x_vec0.shape[0]): 
+			y_hat = 1 * (y_pred >= x_vec0[x])
 			accuracy_vec[x] = accuracy_score(target, y_hat)
 			conf_mat = confusion_matrix(target, y_hat)
 			spec_sens = np.round(np.diagonal(conf_mat) / np.sum(conf_mat, axis = 1), 5).tolist()
@@ -53,10 +53,10 @@ def model_performance(model, data_set, target, predict_names, pred_type, path, f
 	
 		plt.clf()
 		fig = plt.figure(figsize=(12,6))
-		plt.plot(x_vec, accuracy_vec, color = 'cornflowerblue', label = 'accuracy')
-		plt.plot(x_vec, sens_vec, color = 'limegreen', label = 'sensitivity')
-		plt.hlines(0.95, np.min(x_vec), np.max(x_vec), color = 'black', linestyles = 'dashed', label = '0.95')
-		plt.hlines(0.92, np.min(x_vec), np.max(x_vec), color = 'black', linestyles = 'dashdot', label = '0.92')
+		plt.plot(x_vec0, accuracy_vec, color = 'cornflowerblue', label = 'accuracy')
+		plt.plot(x_vec0, sens_vec, color = 'limegreen', label = 'sensitivity')
+		plt.hlines(0.95, np.min(x_vec0), np.max(x_vec0), color = 'black', linestyles = 'dashed', label = '0.95')
+		plt.hlines(0.92, np.min(x_vec0), np.max(x_vec0), color = 'black', linestyles = 'dashdot', label = '0.92')
 		plt.ylabel('value')
 		plt.xlabel('threshold')
 		plt.legend()
@@ -152,23 +152,9 @@ test_Y = move.iloc[test_ix]
 test_Y = test_Y[outcome_col].to_numpy().T[0]
 
 
-aa = timeit.default_timer()
-clf = LogisticRegression().fit(train_set, train_Y)
-print(timeit.default_timer() -  aa)
-
-y_pred = clf.predict_proba(test_set)[:, 1]
-y_hat = 1 * (y_pred > 0.001)
-conf_mat = pd.crosstab(test_Y, y_hat, rownames=['Actual'], colnames=['Predicted'])
-accuracy = accuracy_score(test_Y, y_hat)
-auc = roc_auc_score(test_Y, y_pred)
-sens = conf_mat.iloc[1, 1] / (conf_mat.iloc[1, 0] + conf_mat.iloc[1, 1])
-spec = conf_mat.iloc[0, 0] / (conf_mat.iloc[0, 0] + conf_mat.iloc[0, 1])
-print(conf_mat)
-print("sens: " + str(np.round(sens, 3)) + "; spec: " + str(np.round(spec, 3)))
-
 xgb1 = XGBClassifier(
 	learning_rate = 0.1,
-	n_estimators = 20,
+	n_estimators = 267,
 	max_depth = 8,
 	min_child_weight = 28,
 	gamma = 0.4,
@@ -184,11 +170,11 @@ xgb1 = XGBClassifier(
 # tuning parameters
 
 param_test1 = {
-	# 'max_depth': [5, 6, 7, 8, 9]
-	# 'min_child_weight': [27, 28, 29, 30, 31]
-	# 'gamma': [0.1, 0.2, 0.3, 0.4, 0.5]
-	# 'subsample': [0.3, 0.4, 0.5, 0.6]
-	# 'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1]
+	'max_depth': [5, 6, 7, 8, 9]
+	'min_child_weight': [27, 28, 29, 30, 31]
+	'gamma': [0.1, 0.2, 0.3, 0.4, 0.5]
+	'subsample': [0.3, 0.4, 0.5, 0.6]
+	'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1]
 }
 
 aa = timeit.default_timer()
@@ -204,7 +190,7 @@ print(pd.Series(gsearch1.cv_results_))
 # Final model for binary outcomes (link prediction)
 xgb1 = XGBClassifier(
 	learning_rate = 0.1,
-	n_estimators = 500,
+	n_estimators = 267,
 	max_depth = 8,
 	min_child_weight = 28,
 	gamma = 0.4,
@@ -220,7 +206,7 @@ xgb1 = XGBClassifier(
 
 aa = timeit.default_timer()
 eval_set = [(test_set, test_Y)]
-xgbmodel = xgb1.fit(train_set, train_Y, eval_set = eval_set, early_stopping_rounds = 5, verbose = True)
+xgbmodel = xgb1.fit(train_set, train_Y, eval_set = eval_set, verbose = True)
 print(timeit.default_timer() -  aa)
 
 plt.close('all')
@@ -273,7 +259,7 @@ for ix in ids:
 	pred_prob[ix] = y_pred
 
 inspID = att.loc[att['inspect'] == 1, 'id'].tolist()
-print(np.sum(pred_prob[inspID] >= 0.35))
+print(np.sum(pred_prob[inspID] >= 0.36))
 
 aa = timeit.default_timer()
 np.save("data/predprob", pred_prob)
@@ -291,7 +277,7 @@ move['log_dist_x_dist50'] = move['log_distance'] * move['dist50']
 
 pred_prob = np.load("data/predprob.npy")
 
-pred_dum = 1 * (pred_prob >= 0.35)
+pred_dum = 1 * (pred_prob >= 0.36)
 np.fill_diagonal(pred_dum, 0)
 
 real_data = np.zeros(pred_dum.shape)
