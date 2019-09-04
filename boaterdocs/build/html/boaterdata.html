@@ -17,23 +17,23 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <script type="text/javascript" src="static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+        <script type="text/javascript" src="static/jquery.js"></script>
+        <script type="text/javascript" src="static/underscore.js"></script>
+        <script type="text/javascript" src="static/doctools.js"></script>
+        <script type="text/javascript" src="static/language_data.js"></script>
         <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
-    <script type="text/javascript" src="_static/js/theme.js"></script>
+    <script type="text/javascript" src="static/js/theme.js"></script>
 
     
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Predictive Model of Boater Movement Networks" href="boaternet.html" />
@@ -138,7 +138,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/boaterdata.rst.txt" rel="nofollow"> View page source</a>
+            <a href="sources/boaterdata.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -277,11 +277,21 @@
 <ul>
 <li><p>After obtaining the total traffic (# of inspection per inspection hour) of each inpsected lakes, we rescaled the number of total traffic to annual scale, and re-allocated the number boaters based on the observed proportion of outgoing boaters from each inspected lake.</p>
 <blockquote>
+<div><ul>
+<li><p><span class="math notranslate nohighlight">\(Annaul\ Total\ Traffic = Inspection\ Per\ Hour \cdot 12\ hours \cdot 178\ days\)</span></p>
+<blockquote>
 <div><ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(YearlyTotalTraffic = InspectionPerHour \cdot 12\ hours * 178\ days\)</span></p></li>
+<li><p>The total inspection days in a year was based on the difference between the min and max inspection date in 2017.</p></li>
+<li><p>We assumed a 12-hour boating activities per day in a fishing season.</p></li>
 </ul>
 </div></blockquote>
 </li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>We calculated the distribution of outgoing boater movements to other lakes and the proportion of boaters remaining on the same lake for each inspected lakes.</p></li>
+<li><p>We then multipled the annual total traffic by the distribution to obtain the estimated total number of boaters from the inspected lake to another lake and the estimated total number of boaters remaining on the same lake.</p></li>
+<li><p>The boater movement network estimated using this process was regarded as the data in the predictive model.</p></li>
 </ul>
 </div>
 </div>

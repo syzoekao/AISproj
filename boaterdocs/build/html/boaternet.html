@@ -17,23 +17,23 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <script type="text/javascript" src="static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="static/documentation_options.js"></script>
+        <script type="text/javascript" src="static/jquery.js"></script>
+        <script type="text/javascript" src="static/underscore.js"></script>
+        <script type="text/javascript" src="static/doctools.js"></script>
+        <script type="text/javascript" src="static/language_data.js"></script>
         <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
-    <script type="text/javascript" src="_static/js/theme.js"></script>
+    <script type="text/javascript" src="static/js/theme.js"></script>
 
     
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Results of Predictive Model of Boater Movement Networks" href="boaterresults.html" />
@@ -138,7 +138,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/boaternet.rst.txt" rel="nofollow"> View page source</a>
+            <a href="sources/boaternet.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -154,8 +154,348 @@
   <div class="section" id="predictive-model-of-boater-movement-networks">
 <span id="predictive-model"></span><h1>Predictive Model of Boater Movement Networks<a class="headerlink" href="#predictive-model-of-boater-movement-networks" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li></li>
+<li><p>The observed boater movement network constructed from the Watercraft Inspection Program did not observe all the boater movements among all 9,183 lakes.</p></li>
+<li><p>To accurately predict the risk of AIS invasion of each lake, a complete boater movement network is waranted.</p></li>
+<li><p>We constructed two predictive models to predict the boater movements between lakes using extreme gradient boosting (xgboost).</p></li>
+<li><p>M1: We first predicted whether a directional edge existed between a pair of lakes (whether there were boaters traveling from lake A to lake B).</p></li>
+<li><p>M2: We then predicted the edge weight (the number of boaters traveling from lake A to lake B).</p></li>
+<li><p>We conducted the predictive model using xgboost package (version 0.90) in Python 3.7.3.</p></li>
+<li><p>We described the boater movement data used to construct the predictive model in <a class="reference internal" href="boaterdata.html#data"><span class="std std-ref">Data</span></a>.</p></li>
 </ul>
+<div class="section" id="m1-link-prediction-between-lakes">
+<h2>M1: Link prediction between lakes<a class="headerlink" href="#m1-link-prediction-between-lakes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>We reshaped the boater movement data among the 738 inspected lakes to build the predictive model.</p></li>
+<li><p>For each inspected lake <em>i</em>, we created a directional dataset with 9,182 rows where the lake <em>i</em> was the destination lake and the other 9,182 lakes were origin lakes plus another 9,182 rows where the lake <em>i</em> was the origin lake and the other 9,182 lakes were destination lakes.</p></li>
+<li><p>We then constructed a binary outcome variable indicating whether a pair of origin and destination lakes was observed in the boater movement data (= 1) or not (= 0).</p></li>
+<li><p>By removing duplicates and self loops, the data set contained about 13 million rows.</p></li>
+<li><p>We predicted whether a link existed using the lake attributes including:</p></li>
+</ul>
+<table class="colwidths-given docutils align-default" id="id2">
+<caption><span class="caption-text">Features included in M1</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Features</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>insp_o</p></td>
+<td><p>whether the origin lake was an inspected lake</p></td>
+</tr>
+<tr class="row-odd"><td><p>insp_d</p></td>
+<td><p>whether the destination lake was an inspected lake</p></td>
+</tr>
+<tr class="row-even"><td><p>infest_o</p></td>
+<td><p>whether the origin lake was an infested lake
+(infested by any listed invasive species)</p></td>
+</tr>
+<tr class="row-odd"><td><p>infest_d</p></td>
+<td><p>whether the destination lake was an infested lake
+(infested by any listed invasive species)</p></td>
+</tr>
+<tr class="row-even"><td><p>both_infest</p></td>
+<td><p>whether both origin and destination lakes were infested with any listed invasive species</p></td>
+</tr>
+<tr class="row-odd"><td><p>dist50</p></td>
+<td><p>whether the distance between the pair of lakes was ≤ 50 miles</p></td>
+</tr>
+<tr class="row-even"><td><p>log_distance</p></td>
+<td><p>log transformed distance between the pair of lakes</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_dist_x_dist50</p></td>
+<td><p>log transformed distance between the pair of lakes multipled by dist50</p></td>
+</tr>
+<tr class="row-even"><td><p>log_acre_o</p></td>
+<td><p>log transformed lake size of the origin lake</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_acre_d</p></td>
+<td><p>log transformed lake size of the destination lake</p></td>
+</tr>
+<tr class="row-even"><td><p>log_acre_diff</p></td>
+<td><p>log transformed difference in lake size between origin and destination lakes</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_boat_o</p></td>
+<td><p>log transformed predicted total arrival traffic to the origin lake</p></td>
+</tr>
+<tr class="row-even"><td><p>log_boat_d</p></td>
+<td><p>log transformed predicted total arrival traffic to the destination lake</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_boat_diff</p></td>
+<td><p>log transformed difference in arrival traffic between the origin and the destination lakes</p></td>
+</tr>
+<tr class="row-even"><td><p>log_ramp_acre_o</p></td>
+<td><p>log transformed ramps per acre of the origin lake multiplied by 1,000</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_ramp_acre_d</p></td>
+<td><p>log transformed ramps per acre of the destination lake multiplied by 1,000</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p>All the log tranformed features were added by 1 before transformation.</p></li>
+<li><p>We assumed that the self-loop always existed. That is, there were always some boaters remaining on the same lake.</p></li>
+</ul>
+<div class="section" id="selecting-an-xgboost-model">
+<h3>Selecting an xgboost model<a class="headerlink" href="#selecting-an-xgboost-model" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Because the binary nature of the outcome variable, we used logistic function as the objective (loss) function, and chose a tree-based booster.</p></li>
+<li><p>We conducted grid search using 3-fold cross validation among 80% of the reconstructued movement data to roughly tune the hyperparameters associated with xgboost, including n_estinators, gamma, max_depth, min_child_weight, subsample, colsample_bytree.</p></li>
+<li><p>We used the area under the curve (auc) to select the final model.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb1</span> <span class="o">=</span> <span class="n">XGBClassifier</span><span class="p">(</span>
+        <span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">n_estimators</span> <span class="o">=</span> <span class="mi">267</span><span class="p">,</span>
+        <span class="n">max_depth</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">min_child_weight</span> <span class="o">=</span> <span class="mi">28</span><span class="p">,</span>
+        <span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
+        <span class="n">eta</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">subsample</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
+        <span class="n">colsample_bytree</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">objective</span> <span class="o">=</span> <span class="s1">&#39;binary:logistic&#39;</span><span class="p">,</span>
+        <span class="n">booster</span> <span class="o">=</span> <span class="s1">&#39;gbtree&#39;</span><span class="p">,</span>
+        <span class="n">nthread</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">eval_metric</span> <span class="o">=</span> <span class="s1">&#39;auc&#39;</span><span class="p">,</span>
+        <span class="n">scale_pos_weight</span> <span class="o">=</span> <span class="mi">168</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul>
+<li><p>We used the model to predict the probability of link formation among the rest of 20% of the reconstructued boater movements (test data).</p></li>
+<li><p>We did not use the traditional 0.5 as the cut-off probability. Instead, we picked a cut-off probability by allowing the sensitivity (proportion of accurate predicted edges among the observed edges) to be at least 0.95 and the accuracy (proportion of correctly classified samples) to be at least 0.92.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Sensitivity: proportion of true positive edges predicted given the observed edges.</p></li>
+<li><p>Accuracy: <span class="math notranslate nohighlight">\(\frac{true\ postive\ edges\ predicted + true\ negative\ edges\ predicted} {total\ sample}\)</span></p></li>
+<li><p>We cared less about false positive rate (1 - specificity) because a link might still exit even though it was not observed in the movement data.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>The final cut-off probability is 0.36. The model performance among the test set is displayed below:</p></li>
+</ul>
+<table class="colwidths-given docutils align-default" id="id3">
+<caption><span class="caption-text">Model performance among the test set</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>observed data</p></th>
+<th class="head"></th>
+</tr>
+<tr class="row-even"><th class="head"><p>prediction</p></th>
+<th class="head"><p>0</p></th>
+<th class="head"><p>1</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p>0</p></td>
+<td><p>2,396,629</p></td>
+<td><p>755</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>189,982</p></td>
+<td><p>14,379</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sensitivity</p></td>
+<td><p>95.0%</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Specificity</p></td>
+<td><p>92.7%</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Accuracy</p></td>
+<td><p>92.7%</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>AUC</p></td>
+<td><p>93.8%</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="m2-predicting-edge-weight-of-each-link">
+<h2>M2: Predicting edge weight of each link<a class="headerlink" href="#m2-predicting-edge-weight-of-each-link" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>We predicted the number of boaters of each pair of lakes using the observed boater movement data. The number of boaters among the observed edges ranged from 1 to 76,966.</p></li>
+<li><p>Because the wide range of the number of observed boaters, we log transformed the outcome variable.</p></li>
+<li><p>The features used to build the predictive model included:</p></li>
+</ul>
+<table class="colwidths-given docutils align-default" id="id4">
+<caption><span class="caption-text">Features included in M2</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 75%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Features</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>self_loop</p></td>
+<td><p>whether the origain and the destination lakes were the same lake</p></td>
+</tr>
+<tr class="row-odd"><td><p>insp_o</p></td>
+<td><p>whether the origin lake was an inspected lake</p></td>
+</tr>
+<tr class="row-even"><td><p>insp_d</p></td>
+<td><p>whether the destination lake was an inspected lake</p></td>
+</tr>
+<tr class="row-odd"><td><p>infest_o</p></td>
+<td><p>whether the origin lake was an infested lake
+(infested by any listed invasive species)</p></td>
+</tr>
+<tr class="row-even"><td><p>infest_d</p></td>
+<td><p>whether the destination lake was an infested lake
+(infested by any listed invasive species)</p></td>
+</tr>
+<tr class="row-odd"><td><p>same_infest</p></td>
+<td><p>whether the origin and the destination lakes had the same infestation status (0: neither were infested with any listed infested species; 1: both were infested with at least one listed infested species)</p></td>
+</tr>
+<tr class="row-even"><td><p>dist50</p></td>
+<td><p>whether the distance between the pair of lakes was ≤ 50 miles</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_distance</p></td>
+<td><p>log transformed distance between the pair of lakes</p></td>
+</tr>
+<tr class="row-even"><td><p>log_distance2</p></td>
+<td><p>square term of log transformed distance between the pair of lakes</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_distance3</p></td>
+<td><p>cube term of log transformed distance between the pair of lakes</p></td>
+</tr>
+<tr class="row-even"><td><p>log_dist_x_dist50</p></td>
+<td><p>log transformed distance between the pair of lakes multipled by dist50</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_acre_o</p></td>
+<td><p>log transformed lake size of the origin lake</p></td>
+</tr>
+<tr class="row-even"><td><p>log_acre_o2</p></td>
+<td><p>square term of log transformed lake size of the origin lake</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_acre_d</p></td>
+<td><p>log transformed lake size of the destination lake</p></td>
+</tr>
+<tr class="row-even"><td><p>log_acre_d2</p></td>
+<td><p>square term of log transformed lake size of the destination lake</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_acre_d3</p></td>
+<td><p>cube term of log transformed lake size of the destination lake</p></td>
+</tr>
+<tr class="row-even"><td><p>log_acre_diff</p></td>
+<td><p>log transformed difference in lake size between origin and destination lakes</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_acre_diff2</p></td>
+<td><p>square term of log transformed difference in lake size between origin and destination lakes</p></td>
+</tr>
+<tr class="row-even"><td><p>log_acre_diff3</p></td>
+<td><p>cube term of log transformed difference in lake size between origin and destination lakes</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_boat_o</p></td>
+<td><p>log transformed predicted total arrival traffic to the origin lake</p></td>
+</tr>
+<tr class="row-even"><td><p>log_boat_o2</p></td>
+<td><p>square term of log transformed predicted total arrival traffic to the origin lake</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_boat_o3</p></td>
+<td><p>cube term of log transformed predicted total arrival traffic to the origin lake</p></td>
+</tr>
+<tr class="row-even"><td><p>log_boat_d</p></td>
+<td><p>log transformed predicted total arrival traffic to the destination lake</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_boat_d2</p></td>
+<td><p>square term of log transformed predicted total arrival traffic to the destination lake</p></td>
+</tr>
+<tr class="row-even"><td><p>log_boat_d3</p></td>
+<td><p>cube term of log transformed predicted total arrival traffic to the destination lake</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_boat_diff</p></td>
+<td><p>log transformed difference in arrival traffic between the origin and the destination lakes</p></td>
+</tr>
+<tr class="row-even"><td><p>log_boat_diff2</p></td>
+<td><p>square term of log transformed difference in arrival traffic between the origin and the destination lakes</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_boat_diff3</p></td>
+<td><p>cube term of log transformed difference in arrival traffic between the origin and the destination lakes</p></td>
+</tr>
+<tr class="row-even"><td><p>log_ramp_acre_o</p></td>
+<td><p>log transformed ramps per acre of the origin lake</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_ramp_acre_d</p></td>
+<td><p>log transformed ramps per acre of the destination lake</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p>Similarly, all the log tranformed features were added by 1 before transformation.</p></li>
+</ul>
+<div class="section" id="id1">
+<h3>Selecting an xgboost model<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Because the outcome variable is continuous, we used regression with squared loss <code class="docutils literal notranslate"><span class="pre">reg:squarederror</span></code> as the objective (loss) function, and chose a tree-based booster.</p></li>
+<li><p>We conducted grid search using 3-fold cross validation among 80% of the observed movement data to roughly tune the hyperparameters associated with xgboost, including n_estinators, gamma, max_depth, min_child_weight, subsample, colsample_bytree.</p></li>
+<li><p>We used the root mean squared error (rmse) to select the final model.</p></li>
+<li><p>The final model selected is</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb1</span> <span class="o">=</span> <span class="n">XGBRegressor</span><span class="p">(</span>
+        <span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">n_estimators</span> <span class="o">=</span> <span class="mi">640</span><span class="p">,</span>
+        <span class="n">max_depth</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">min_child_weight</span> <span class="o">=</span> <span class="mi">19</span><span class="p">,</span>
+        <span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">eta</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">subsample</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span>
+        <span class="n">colsample_bytree</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">objective</span> <span class="o">=</span> <span class="s1">&#39;reg:squarederror&#39;</span><span class="p">,</span>
+        <span class="n">booster</span> <span class="o">=</span> <span class="s1">&#39;gbtree&#39;</span><span class="p">,</span>
+        <span class="n">nthread</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">eval_metric</span> <span class="o">=</span> <span class="s1">&#39;rmse&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>We used the model to predict the log transformed number of boaters among the 20% test set. We then transformed the predicted number of boaters back to the original scale.</p></li>
+<li><p>The distribution and the correlation of the predicted and the observed boaters are presented below</p></li>
+</ul>
+<img src="fig/boaters_prediction(distribution).png" style="width: 80%"><img src="fig/boaters_prediction(pred vs actual).png" style="width: 80%"><ul class="simple">
+<li><p>Compared between all the observed and predicted boater movements, the correlation could be as high as 0.921.</p></li>
+</ul>
+<img src="fig/boaters_prediction(pred vs actual) post.png" style="width: 80%"></div>
+</div>
+<div class="section" id="simulating-boater-movement-networks-in-mn">
+<h2>Simulating boater movement networks in MN<a class="headerlink" href="#simulating-boater-movement-networks-in-mn" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>We used the two predictive models to simulate 20 boater movement networks among the 9,183 lakes in MN.</p></li>
+<li><p>Using M1, we predicted the probability of edge formation between any pair of lakes.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If the predicted probability was ≥ 0.36, we assumed the link existed; if the predicted probability was &lt; 0.36, we randomly sample whether the link existed using binomial distribution with the predicted probability.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Using M2, we predicted the number of boater movements between a pair of lakes that a predicted edge existed.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>We assumed the predicted number of boaters between the pair of lakes was the mean and randomly sampled the number of boaters using a Poisson distribution.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Across all 20 networks,</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The average true positive rate is 98.5% with a standard deviation of 0.02%. The average true negative rate is 90% with a standard deviation of 0.004%.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
 </div>
 
 
