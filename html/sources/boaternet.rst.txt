@@ -259,7 +259,7 @@ Simulating boater movement networks in MN
 * We used the two predictive models to simulate 20 boater movement networks among the 9,183 lakes in MN. 
 * Using M1, we predicted the probability of edge formation between any pair of lakes. 
 	
-	* If the predicted probability was ≥ 0.36, we assumed the link existed; if the predicted probability was < 0.36, we randomly sample whether the link existed using binomial distribution with the predicted probability. 
+	* If the predicted probability was ≥ 0.36, we assumed the link existed; if the predicted probability was < 0.36, we randomly sample whether or not a link exists between the pair using binomial distribution. 
 
 * Using M2, we predicted the number of boater movements between a pair of lakes that a predicted edge existed. 
 
