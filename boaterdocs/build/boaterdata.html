@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Predictive Model of Boater Movement Networks" href="boaternet.html" />
-    <link rel="prev" title="Welcome to Network connectivity patterns of Minnesota waterbodies and implications for aquatic invasive species prevention’s documentation!" href="index.html" /> 
+    <link rel="prev" title="Project description" href="objective.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,10 +83,10 @@
             
               <p class="caption"><span class="caption-text">Table of Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="objective.html">Project description</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="boaternet.html">Predictive Model of Boater Movement Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="boaterresults.html">Results of Predictive Model of Boater Movement Networks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="objective.html">Project description</a></li>
 </ul>
 
             
@@ -204,14 +204,16 @@
 <blockquote>
 <div><ul class="simple">
 <li><p>A total of 462 lakes had both the number of inspections and the total inspection hours.</p></li>
+<li><p>276 inspected lakes did not have the record of total inspection hours.</p></li>
 </ul>
 </div></blockquote>
 </li>
-<li><p>We used the random forest model to predict the total traffic (inspection per hour) on each of the 9,183 lakes.</p></li>
+<li><p>We used the random forest model to predict the total traffic (inspection per hour) on the uninspected lakes and the inspected lakes without the information of total inspection hours.</p></li>
 <li><p>For the 462 inspected lakes, we used the original number of inspections per inspection hour from the observed data.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Using the random forest model, we identified 7 outliers among the 462 inspected lakes. For these outliers, we used the predicted total traffic from the random forest model to inform their total traffic.</p></li>
+<li><p>For the rest of the 276 inspected lakes that had no inspection hours, we used the random forest model to inform their total traffic too.</p></li>
 </ul>
 </div></blockquote>
 </li>
@@ -270,6 +272,28 @@
 </tbody>
 </table>
 </div>
+<div class="section" id="reallocation-of-the-outgoing-boater-movements">
+<h2>Reallocation of the outgoing boater movements<a class="headerlink" href="#reallocation-of-the-outgoing-boater-movements" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>After obtaining the total traffic (# of inspection per inspection hour) of each inpsected lakes, we rescaled the number of total traffic to annual scale, and re-allocated the number boaters based on the observed proportion of outgoing boaters from each inspected lake.</p>
+<blockquote>
+<div><ul>
+<li><p><span class="math notranslate nohighlight">\(Annaul\ Total\ Traffic = Inspection\ Per\ Hour \cdot 12\ hours \cdot 178\ days\)</span></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The total inspection days in a year was based on the difference between the min and max inspection date in 2017.</p></li>
+<li><p>We assumed a 12-hour boating activities per day in a fishing season.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>We calculated the distribution of outgoing boater movements to other lakes and the proportion of boaters remaining on the same lake for each inspected lakes.</p></li>
+<li><p>We then multipled the annual total traffic by the distribution to obtain the estimated total number of boaters from the inspected lake to another lake and the estimated total number of boaters remaining on the same lake.</p></li>
+<li><p>The boater movement network estimated using this process was regarded as the data in the predictive model.</p></li>
+</ul>
+</div>
 </div>
 
 
@@ -283,7 +307,7 @@
         <a href="boaternet.html" class="btn btn-neutral float-right" title="Predictive Model of Boater Movement Networks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Network connectivity patterns of Minnesota waterbodies and implications for aquatic invasive species prevention’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="objective.html" class="btn btn-neutral float-left" title="Project description" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

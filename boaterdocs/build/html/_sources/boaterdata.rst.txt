@@ -19,7 +19,7 @@ Data source of boater movements
 * Inspectors interviewed boaters at public access points during the open-water seasons as the boaters entered or exited a lake. 
 * For each inspection interview, the boater would answer the questions regarding the past (recalled) and future (planned) boating activity in Minnesota lakes. 
 
-	* Therefore, for each inspection we were able to construct a directional boater movement from the past to the current water activities and from the current to the futrue water activities. 
+	* Therefore, for each inspection we were able to construct a directional boater movement from the past to the current water activities and from the current to the future water activities. 
 
 	.. raw:: html
 
@@ -51,13 +51,17 @@ Adjusting for sampling bias
 * Only inspections in 2017 had records of both the number of inspections and inspections hours. Therefore, the number of lakes used for prediction was fewer than the number of inspected lakes in the inspection survey. 
 	
 	* A total of 462 lakes had both the number of inspections and the total inspection hours. 
+	* 276 inspected lakes did not have the record of total inspection hours. 
 
-* We used the random forest model to predict the total traffic (inspection per hour) on each of the 9,183 lakes. 
+* We used the random forest model to predict the total traffic (inspection per hour) on the uninspected lakes and the inspected lakes without the information of total inspection hours. 
 
-* For the 462 inspected lakes, we used the original number of inspections per inspection hour from the observed data. Using the random forest model, we identified 7 outliers among the 462 lakes. For these outliers, we used the predicted total traffic from the random forest model to inform their total traffic. 
+* For the 462 inspected lakes, we used the original number of inspections per inspection hour from the observed data. 
+	
+	* Using the random forest model, we identified 7 outliers among the 462 inspected lakes. For these outliers, we used the predicted total traffic from the random forest model to inform their total traffic. 
+	* For the rest of the 276 inspected lakes that had no inspection hours, we used the random forest model to inform their total traffic too. 
 
-.. list-table:: *Outlier lakes among the 462 inspected lakes*
-	:widths: 7 10 10 10 
+.. list-table:: Outlier lakes among the 462 inspected lakes
+	:widths: 7 12 12 12 
 	:header-rows: 1
 
 	* - DOW #
@@ -68,17 +72,39 @@ Adjusting for sampling bias
 	  - Big Sandy
 	  - 49
 	  - 1017
+	* - 1015900
+	  - Farm Island
+	  - 27
+	  - 812
+	* - 1020400
+	  - Round
+	  - 8
+	  - 235
+	* - 1020900 
+	  - Cedar
+	  - 55
+	  - 572
+	* - 31085300 
+	  - Little Sand
+	  - 1
+	  - 12
+	* - 58014200 
+	  - Pokegama
+	  - 42
+	  - 725
+	* - 71008200 
+	  - Big
+	  - 56
+	  - 731
 
 
+----------------------------------------------------------------
+Reallocation of the outgoing boater movements
+----------------------------------------------------------------
 
+* After obtaining the total traffic (# of inspection per inspection hour) of each inpsected lakes, we rescaled the number of total traffic to annual scale, and re-allocated the number boaters based on the observed proportion of outgoing boaters from each inspected lake. 
 
-
---------------------------------
-Feature engineering
---------------------------------
-
-
-
+	* :math:`YearlyTotalTraffic = InspectionPerHour \cdot 12\ hours * 178\ days`
 
 
 

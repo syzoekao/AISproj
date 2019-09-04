@@ -51,12 +51,14 @@ Adjusting for sampling bias
 * Only inspections in 2017 had records of both the number of inspections and inspections hours. Therefore, the number of lakes used for prediction was fewer than the number of inspected lakes in the inspection survey. 
 	
 	* A total of 462 lakes had both the number of inspections and the total inspection hours. 
+	* 276 inspected lakes did not have the record of total inspection hours. 
 
-* We used the random forest model to predict the total traffic (inspection per hour) on each of the 9,183 lakes. 
+* We used the random forest model to predict the total traffic (inspection per hour) on the uninspected lakes and the inspected lakes without the information of total inspection hours. 
 
 * For the 462 inspected lakes, we used the original number of inspections per inspection hour from the observed data. 
 	
 	* Using the random forest model, we identified 7 outliers among the 462 inspected lakes. For these outliers, we used the predicted total traffic from the random forest model to inform their total traffic. 
+	* For the rest of the 276 inspected lakes that had no inspection hours, we used the random forest model to inform their total traffic too. 
 
 .. list-table:: Outlier lakes among the 462 inspected lakes
 	:widths: 7 12 12 12 
@@ -94,3 +96,21 @@ Adjusting for sampling bias
 	  - Big
 	  - 56
 	  - 731
+
+
+----------------------------------------------------------------
+Reallocation of the outgoing boater movements
+----------------------------------------------------------------
+
+* After obtaining the total traffic (# of inspection per inspection hour) of each inpsected lakes, we rescaled the number of total traffic to annual scale, and re-allocated the number boaters based on the observed proportion of outgoing boaters from each inspected lake. 
+
+	* :math:`Annaul\ Total\ Traffic = Inspection\ Per\ Hour \cdot 12\ hours \cdot 178\ days`
+		
+		* The total inspection days in a year was based on the difference between the min and max inspection date in 2017. 
+		* We assumed a 12-hour boating activities per day in a fishing season. 
+
+* We calculated the distribution of outgoing boater movements to other lakes and the proportion of boaters remaining on the same lake for each inspected lakes. 
+* We then multipled the annual total traffic by the distribution to obtain the estimated total number of boaters from the inspected lake to another lake and the estimated total number of boaters remaining on the same lake. 
+* The boater movement network estimated using this process was regarded as the data in the predictive model. 
+
+

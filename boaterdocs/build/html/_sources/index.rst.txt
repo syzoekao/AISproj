@@ -9,9 +9,11 @@ Welcome to Network connectivity patterns of Minnesota waterbodies and implicatio
 .. toctree::
    :maxdepth: 2
    :caption: Table of Contents:
-   :glob:
 
-   * 
+   objective.rst
+   boaterdata.rst
+   boaternet.rst
+   boaterresults.rst
 
 
 Indices and tables

@@ -7,7 +7,7 @@ Welcome to Network connectivity patterns of Minnesota waterbodies and implicatio
 ===========================================================================================================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Table of Contents:
 
    objective.rst
