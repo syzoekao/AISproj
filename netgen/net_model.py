@@ -344,6 +344,7 @@ move['log_boat_o3'] = move['log_boat_o'] ** 3
 move['log_boat_d2'] = move['log_boat_d'] ** 2
 move['log_boat_d3'] = move['log_boat_d'] ** 3
 
+
 move['log_acre_diff_x_log_boat_diff'] = move['log_acre_diff'] * move['log_boat_diff']
 move['log_acre_o_x_log_boat_o'] = move['log_acre_o'] * move['log_boat_o']
 move['log_acre_d_x_log_boat_d'] = move['log_acre_d'] * move['log_boat_d']
@@ -352,6 +353,7 @@ move['log_distance_x_dist50'] = move['log_distance'] * move['dist50']
 move['log_normBoatsExtra'] = np.log(move['normBoatsExtra'] + 1)
 
 y_col = ['log_normBoatsExtra']
+
 
 x_col = ['log_distance', 'log_distance2', 'log_distance3', 'self_loop', \
 'log_acre_diff', 'log_acre_diff2', 'log_acre_diff3', 'log_acre_o', 'log_acre_o2', \
@@ -378,7 +380,7 @@ test_Y = test_Y[y_col].to_numpy().T[0]
 
 xgb1 = XGBRegressor(
 	learning_rate = 0.1,
-	n_estimators = 617,
+	n_estimators = 582,
 	max_depth = 8,
 	min_child_weight = 19,
 	gamma = 0.3,
