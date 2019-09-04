@@ -24,6 +24,7 @@ man/
 share/
 etc/
 boater_gen_out/
+boaterdocs/
 
 # exceptions
 !lib/
