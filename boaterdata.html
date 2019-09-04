@@ -202,23 +202,11 @@
 </li>
 <li><p>Only inspections in 2017 had records of both the number of inspections and inspections hours. Therefore, the number of lakes used for prediction was fewer than the number of inspected lakes in the inspection survey.</p>
 <blockquote>
-<div><ul class="simple">
+<div><ul>
 <li><p>A total of 462 lakes had both the number of inspections and the total inspection hours.</p></li>
-<li><p>276 inspected lakes did not have the record of total inspection hours.</p></li>
-</ul>
-</div></blockquote>
-</li>
-<li><p>We used the random forest model to predict the total traffic (inspection per hour) on the uninspected lakes and the inspected lakes without the information of total inspection hours.</p></li>
-<li><p>For the 462 inspected lakes, we used the original number of inspections per inspection hour from the observed data.</p>
+<li><p>7 out of the 462 lakes were regarded as outliers (&gt; 5 standard deviation of the inspections per hour).</p>
 <blockquote>
-<div><ul class="simple">
-<li><p>Using the random forest model, we identified 7 outliers among the 462 inspected lakes. For these outliers, we used the predicted total traffic from the random forest model to inform their total traffic.</p></li>
-<li><p>For the rest of the 276 inspected lakes that had no inspection hours, we used the random forest model to inform their total traffic too.</p></li>
-</ul>
-</div></blockquote>
-</li>
-</ul>
-<table class="colwidths-given docutils align-default" id="id2">
+<div><table class="colwidths-given docutils align-default" id="id2">
 <caption><span class="caption-text">Outlier lakes among the 462 inspected lakes</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 16%" />
@@ -271,6 +259,28 @@
 </tr>
 </tbody>
 </table>
+</div></blockquote>
+</li>
+<li><p>276 inspected lakes did not have the record of total inspection hours.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>We used the random forest model to predict the total traffic (inspection per hour) on the uninspected lakes and the inspected lakes without the information of total inspection hours.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The model included 455 lakes (the 7 outlier lakes were excluded from the random forest model).</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>For the 455 inspected lakes, we used the original number of inspections per inspection hour from the observed data.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>We predicted the total traffic of the rest of the inspected lakes (including lakes without records of inspection hours and outlier lakes).</p></li>
+<li><p>We also predicted the total traffic of the uninspected lakes.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
 </div>
 <div class="section" id="reallocation-of-the-outgoing-boater-movements">
 <h2>Reallocation of the outgoing boater movements<a class="headerlink" href="#reallocation-of-the-outgoing-boater-movements" title="Permalink to this headline">¶</a></h2>

@@ -32,6 +32,8 @@ M1: Link prediction between lakes
 	  - whether the origin lake was an inspected lake 
 	* - insp_d
 	  - whether the destination lake was an inspected lake 
+	* - same_insp
+	  - whether both origin lake and destination lake had the same inspection status 
 	* - infest_o
 	  - whether the origin lake was an infested lake
 	    (infested by any listed invasive species)
@@ -149,6 +151,8 @@ M2: Predicting edge weight of each link
 	  - whether the origin lake was an inspected lake 
 	* - insp_d
 	  - whether the destination lake was an inspected lake 
+	* - same_insp
+	  - whether both origin lake and destination lake had the same inspection status 
 	* - infest_o
 	  - whether the origin lake was an infested lake
 	    (infested by any listed invasive species)
