@@ -4,6 +4,13 @@
 Results of Predictive Model of Boater Movement Networks
 =======================================================
 
+* The simulated boater movements
+
+.. raw:: html
+
+	<img src="fig/sim boats.png" style="width: 80%">
+
+
 * We used ``tnet`` package in ``R`` to calculate the degree and betweenness of each lake across the 20 boater movement networks. 
 
 .. list-table:: Top 10 lakes by degree
