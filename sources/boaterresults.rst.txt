@@ -1,0 +1,92 @@
+.. _Predictive Results: 
+
+=======================================================
+Results of Predictive Model of Boater Movement Networks
+=======================================================
+
+* A sample of the simulated boater movements
+
+.. raw:: html
+
+	<img src="fig/sim boats.png" style="width: 80%">
+
+
+* We used ``tnet`` package in ``R`` to calculate the degree and betweenness of each lake across the 20 boater movement networks. 
+
+.. list-table:: Top 10 lakes by degree
+	:widths: 10 15 10
+	:header-rows: 1
+
+	* - DOW#
+	  - Lake name
+	  - Degree
+	* - 27013300
+	  - Minnetonka
+	  - 5,799
+	* - 11030500
+	  - Gull
+	  - 5,127
+	* - 69037800
+	  - Vermilion
+	  - 4,871 
+	* - 11020300
+	  - Leech
+	  - 4,691 
+	* - 18031200
+	  - Cross Lake Reservoir
+	  - 4,549
+	* - 10005900
+	  - Waconia
+	  - 4,430
+	* - 27010400
+	  - Medicine
+	  - 4,398 
+	* - 13001200
+	  - Chisago
+	  - 4,209  
+	* - 73020000
+	  - Koronis
+	  - 4,104 
+	* - 18037200
+	  - North Long
+	  - 3,950 
+
+
+.. list-table:: Top 10 lakes by betweenness
+	:widths: 10 15 10
+	:header-rows: 1
+
+	* - DOW#
+	  - Lake name
+	  - Betweenness
+	* - 27013300
+	  - Minnetonka
+	  - 9,780,635 
+	* - 69037800
+	  - Vermilion
+	  - 6,197,520 	
+	* - 78002400
+	  - Mud
+	  - 4,901,887 	
+	* - 13001200
+	  - Chisago
+	  - 2,684,141  	
+	* - 27001900
+	  - Nokomis
+	  - 2,400,892 
+	* - 11030500
+	  - Gull
+	  - 1,892,078 
+	* - 16049600
+	  - Sawbill
+	  - 1,455,762 
+	* - 27001600
+	  - Harriet
+	  - 1,419,911  
+	* - 30010700
+	  - Blue
+	  - 1,182,720   
+	* - 16036500
+	  - Clara
+	  - 1,153,548    
+
