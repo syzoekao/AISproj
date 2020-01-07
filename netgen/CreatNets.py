@@ -451,126 +451,68 @@ def extract_sim_boat(att, county, path = 'data/Annual boater net2'):
 	if county == 'meeker': 
 		att.loc[att['dow'] == 73020000, ['county', 'county_name']] = [47, county]
 
-	nLake = att.loc[att['county_name'] == county, 'dow'].shape[0] + 6
-	lake_set = np.append(att.loc[att['county_name']==county, 'dow'], np.array([0, 1, 2, 3, 4, 5])) 
-	# 0: zm infested lakes in other counties; 1: zm uninfested lakes in other counties;
-	# 2: ss infested lakes in other counties; 3: ss uninfested lakes in other counties; 
-	# 4: ew infested lakes in other counties; 5: ew uninfested lakes in other counties
+	nLake = att.loc[att['county_name'] == county, 'dow'].shape[0] + 8
+	added_set = pd.Series(['none', 'zm', 'ss', 'ew', 'zm_ss', 'zm_ew', 'ss_ew', 'zm_ss_ew'])
+	lake_set = pd.concat([att.loc[att['county_name']==county, 'dow'], added_set]) 
+	in_county_lakes = att.loc[att['county_name']==county, 'dow']
 
 	boatdf = pd.DataFrame({'dow_origin': np.repeat(lake_set, nLake), 
 		'dow_destination': np.tile(lake_set, nLake)})
 
 	# Get attributes of the origin lakes
-	attribute_set = ['dow', 'lake_name', 'county_name', 'zm2019', 'ss2019', 'ew2019']
+	attribute_set = ['dow', 'lake_name', 'county_name', 'infest_cate']
 	boatdf = pd.merge(boatdf, att[attribute_set], how = 'left', left_on=['dow_origin'], right_on=['dow'])
 	boatdf.drop(columns=['dow'], inplace = True)
-	boatdf.columns = ['dow_origin', 'dow_destination', 'lake_origin', 'county_origin', 
-		'zm_origin', 'ss_origin', 'ew_origin']
-	boatdf['zm_origin'].fillna(0, inplace = True)
-	boatdf.loc[boatdf['dow_origin'] == 0, 'zm_origin'] = 1
-	boatdf['ss_origin'].fillna(0, inplace = True)
-	boatdf.loc[boatdf['dow_origin'] == 2, 'ss_origin'] = 1
-	boatdf['ew_origin'].fillna(0, inplace = True)
-	boatdf.loc[boatdf['dow_origin'] == 4, 'ew_origin'] = 1
+	boatdf.columns = ['dow_origin', 'dow_destination', 'lake_origin', 'county_origin', 'infest_origin']
 
 	# Get attributes of the destination lakes
 	boatdf = pd.merge(boatdf, att[attribute_set], how = 'left', left_on=['dow_destination'], right_on=['dow'])
 	boatdf.drop(columns=['dow'], inplace = True)
 	boatdf.columns = ['dow_origin', 'dow_destination', 'lake_origin', 'county_origin',
-		'zm_origin', 'ss_origin', 'ew_origin', 'lake_destination', 'county_destination', 
-		'zm_destination', 'ss_destination', 'ew_destination']
-	boatdf['zm_destination'].fillna(0, inplace = True)
-	boatdf.loc[boatdf['dow_destination'] == 0, 'zm_destination'] = 1
-	boatdf['ss_destination'].fillna(0, inplace = True)
-	boatdf.loc[boatdf['dow_destination'] == 2, 'ss_destination'] = 1
-	boatdf['ew_destination'].fillna(0, inplace = True)
-	boatdf.loc[boatdf['dow_destination'] == 4, 'ew_destination'] = 1
+		'infest_origin', 'lake_destination', 'county_destination', 
+		'infest_destination']
 
-	boatdf.loc[boatdf['dow_origin'].isin([0, 1, 2, 3, 4, 5]), 'county_origin'] = 'not '+ county
-	boatdf.loc[boatdf['dow_destination'].isin([0, 1, 2, 3, 4, 5]), 'county_destination'] = 'not '+county
+	boatdf.loc[boatdf['dow_origin'].isin(['none', 'zm', 'ss', 'ew', 'zm_ss', 'zm_ew', 'ss_ew', 'zm_ss_ew']), 
+	'county_origin'] = 'not '+ county
+	boatdf.loc[boatdf['dow_destination'].isin(['none', 'zm', 'ss', 'ew', 'zm_ss', 'zm_ew', 'ss_ew', 'zm_ss_ew']), 
+	'county_destination'] = 'not '+county
 	boatdf = boatdf.loc[~((boatdf['county_origin'] == 'not ' + county) & (boatdf['county_destination'] == 'not ' + county))]
 	
 	for i in range(1, 21): 
-		# print(i)
+		print(i)
 		tmp_boat = pd.read_csv(path + '/boats'+str(i) +'.csv')
-		tmp_boat = tmp_boat[(tmp_boat['dow_origin'].isin(lake_set)) | (tmp_boat['dow_destination'].isin(lake_set))]
+		tmp_boat = tmp_boat.loc[(tmp_boat['dow_origin'].isin(in_county_lakes)) | (tmp_boat['dow_destination'].isin(in_county_lakes))]
 		tmp_boat.columns = ['dow_origin', 'dow_destination', 'weight']
-		tmp_boat = pd.merge(tmp_boat, att[['dow', 'county_name', 'zm2019', 'ss2019', 'ew2019']], how = 'left', left_on=['dow_origin'], right_on=['dow'])
+		tmp_boat = pd.merge(tmp_boat, att[['dow', 'county_name', 'infest_cate']], how = 'left', left_on=['dow_origin'], right_on=['dow'])
 		tmp_boat.drop(columns=['dow'], inplace = True)
-		tmp_boat.columns = ['dow_origin', 'dow_destination', 'weight', 'county_origin', 'zm_origin', 'ss_origin', 'ew_origin']
-		tmp_boat = pd.merge(tmp_boat, att[['dow', 'county_name', 'zm2019', 'ss2019', 'ew2019']], how = 'left', left_on=['dow_destination'], right_on=['dow'])
+		tmp_boat.columns = ['dow_origin', 'dow_destination', 'weight', 'county_origin', 'infest_origin']
+		tmp_boat = pd.merge(tmp_boat, att[['dow', 'county_name', 'infest_cate']], how = 'left', left_on=['dow_destination'], right_on=['dow'])
 		tmp_boat.drop(columns=['dow'], inplace = True)
-		tmp_boat.columns = ['dow_origin', 'dow_destination', 'weight', 'county_origin', 'zm_origin',
-		       'ss_origin', 'ew_origin', 'county_destination', 'zm_destination', 'ss_destination', 'ew_destination']
+		tmp_boat.columns = ['dow_origin', 'dow_destination', 'weight', 'county_origin', 'infest_origin', 
+			'county_destination', 'infest_destination']
 
 		# for movement that are from / to other counties by the type of species
 		tmp_boat.loc[tmp_boat['county_origin'] != county, 'county_origin'] = 'not ' + county
 		tmp_boat.loc[tmp_boat['county_destination'] != county, 'county_destination'] = 'not ' + county
 		
-		# Get info for within county movements
-		county_boat = tmp_boat.loc[(tmp_boat['county_origin'] == county) & (tmp_boat['county_destination'] == county)].copy()
-		county_boat.drop(columns = ['zm_origin', 'ss_origin', 'ew_origin', 
-			'zm_destination', 'ss_destination', 'ew_destination', 'county_origin', 'county_destination'], inplace = True)
+		tmp_boat.loc[(tmp_boat['county_origin'] == 'not ' + county) & (tmp_boat['infest_origin'].isin(added_set)), 'dow_origin'] = \
+			tmp_boat.loc[(tmp_boat['county_origin'] == 'not ' + county) & (tmp_boat['infest_origin'].isin(added_set)), 'infest_origin']
 
-		# Get info for out of county movements
-		## boats with other counties for zm 
-		zm_boat = tmp_boat.loc[(tmp_boat['county_origin'] == 'not ' + county) | (tmp_boat['county_destination'] == 'not ' + county)].copy()
-		zm_boat.loc[(zm_boat['county_origin'] == 'not ' + county) & (zm_boat['zm_origin'] == 1), 'dow_origin'] = 0
-		zm_boat.loc[(zm_boat['county_origin'] == 'not ' + county) & (zm_boat['zm_origin'] == 0), 'dow_origin'] = 1		
-		zm_boat.loc[(zm_boat['county_destination'] == 'not ' + county) & (zm_boat['zm_destination'] == 1), 'dow_destination'] = 0
-		zm_boat.loc[(zm_boat['county_destination'] == 'not ' + county) & (zm_boat['zm_destination'] == 0), 'dow_destination'] = 1		
-		zm_sum = zm_boat.groupby(['dow_origin','dow_destination'])['weight'].agg('sum').reset_index()
+		tmp_boat.loc[(tmp_boat['county_destination'] == 'not ' + county) & (tmp_boat['infest_destination'].isin(added_set)), 'dow_destination'] = \
+			tmp_boat.loc[(tmp_boat['county_destination'] == 'not ' + county) & (tmp_boat['infest_destination'].isin(added_set)), 'infest_destination']
 
-		## boats with other counties for ss 
-		ss_boat = tmp_boat.loc[(tmp_boat['county_origin'] == 'not ' + county) | (tmp_boat['county_destination'] == 'not ' + county)].copy()
-		ss_boat.loc[(ss_boat['county_origin'] == 'not ' + county) & (ss_boat['ss_origin'] == 1), 'dow_origin'] = 2
-		ss_boat.loc[(ss_boat['county_origin'] == 'not ' + county) & (ss_boat['ss_origin'] == 0), 'dow_origin'] = 3		
-		ss_boat.loc[(ss_boat['county_destination'] == 'not ' + county) & (ss_boat['ss_destination'] == 1), 'dow_destination'] = 2
-		ss_boat.loc[(ss_boat['county_destination'] == 'not ' + county) & (ss_boat['ss_destination'] == 0), 'dow_destination'] = 3		
-		ss_sum = ss_boat.groupby(['dow_origin','dow_destination'])['weight'].agg('sum').reset_index()
-
-		## boats with other counties for ew
-		ew_boat = tmp_boat.loc[(tmp_boat['county_origin'] == 'not ' + county) | (tmp_boat['county_destination'] == 'not ' + county)].copy()
-		ew_boat.loc[(ew_boat['county_origin'] == 'not ' + county) & (ew_boat['ew_origin'] == 1), 'dow_origin'] = 4
-		ew_boat.loc[(ew_boat['county_origin'] == 'not ' + county) & (ew_boat['ew_origin'] == 0), 'dow_origin'] = 5		
-		ew_boat.loc[(ew_boat['county_destination'] == 'not ' + county) & (ew_boat['ew_destination'] == 1), 'dow_destination'] = 4
-		ew_boat.loc[(ew_boat['county_destination'] == 'not ' + county) & (ew_boat['ew_destination'] == 0), 'dow_destination'] = 5		
-		ew_sum = ew_boat.groupby(['dow_origin','dow_destination'])['weight'].agg('sum').reset_index()
-
-		sum_df = zm_sum.append(ss_sum)
-		sum_df = sum_df.append(ew_sum)
-
-		county_boat = county_boat.append(sum_df)
-
-		# get info for within county movements
-		boatdf = pd.merge(boatdf, county_boat, how = 'left', left_on = ['dow_origin', 'dow_destination'], right_on = ['dow_origin', 'dow_destination'])
+		sum_df = tmp_boat.groupby(['dow_origin','dow_destination'])['weight'].agg('sum').reset_index()
+		boatdf = pd.merge(boatdf, sum_df, how = 'left', left_on = ['dow_origin', 'dow_destination'], right_on = ['dow_origin', 'dow_destination'])
 		boatdf['weight'].fillna(0, inplace = True)
 		boatdf = boatdf.rename(columns = {'weight': 'weight'+str(i)})
 		boatdf['weight'+str(i)].fillna(0, inplace = True)
 
-	boatdf.dow_origin = boatdf.dow_origin.astype(str)
-	boatdf.dow_destination = boatdf.dow_destination.astype(str)
-	boatdf = boatdf[(~boatdf['dow_origin'].isin(['0', '1', '2', '3', '4', '5']))|(~boatdf['dow_destination'].isin(['0', '1', '2', '3', '4', '5']))]
-
-	boatdf.loc[boatdf['dow_origin']=='0', 'dow_origin'] = 'zm infested other county'
-	boatdf.loc[boatdf['dow_origin']=='1', 'dow_origin'] = 'not zm infested other county'
-	boatdf.loc[boatdf['dow_origin']=='2', 'dow_origin'] = 'ss infested other county'
-	boatdf.loc[boatdf['dow_origin']=='3', 'dow_origin'] = 'not ss infested other county'
-	boatdf.loc[boatdf['dow_origin']=='4', 'dow_origin'] = 'ew infested other county'
-	boatdf.loc[boatdf['dow_origin']=='5', 'dow_origin'] = 'not ew infested other county'
-
-	boatdf.loc[boatdf['dow_destination']=='0', 'dow_destination'] = 'zm infested other county'
-	boatdf.loc[boatdf['dow_destination']=='1', 'dow_destination'] = 'not zm infested other county'
-	boatdf.loc[boatdf['dow_destination']=='2', 'dow_destination'] = 'ss infested other county'
-	boatdf.loc[boatdf['dow_destination']=='3', 'dow_destination'] = 'not ss infested other county'
-	boatdf.loc[boatdf['dow_destination']=='4', 'dow_destination'] = 'ew infested other county'
-	boatdf.loc[boatdf['dow_destination']=='5', 'dow_destination'] = 'not ew infested other county'
-
+	boatdf['infest_origin']
 	return boatdf
 
 
 att = pd.read_csv('data/lake_attribute.csv')
-att = att[['dow', 'lake_name', 'acre', 'utm_x', 'utm_y', 'county', 'county_name', 'infest', 'inspect', 'id']]
+att = att[['dow', 'lake_name', 'acre', 'utm_x', 'utm_y', 'county', 'county_name', 'inspect', 'id']]
 
 infestW2019 = open("data/infestedwaterDOW.txt", "r").readlines()[0]
 infestW2019 = ast.literal_eval(infestW2019)
@@ -578,14 +520,21 @@ infestW2019 = ast.literal_eval(infestW2019)
 att['zm2019'] = att['dow'].isin(infestW2019['zm']) * 1
 att['ss2019'] = att['dow'].isin(infestW2019['ss']) * 1
 att['ew2019'] = att['dow'].isin(infestW2019['ew']) * 1
+att['infest_cate'] = 'none'
+att.loc[(att['zm2019'] == 1) & (att['ss2019'] == 0) & (att['ew2019'] == 0), 'infest_cate'] = 'zm'
+att.loc[(att['zm2019'] == 0) & (att['ss2019'] == 1) & (att['ew2019'] == 0), 'infest_cate'] = 'ss'
+att.loc[(att['zm2019'] == 0) & (att['ss2019'] == 0) & (att['ew2019'] == 1), 'infest_cate'] = 'ew'
+att.loc[(att['zm2019'] == 1) & (att['ss2019'] == 1) & (att['ew2019'] == 0), 'infest_cate'] = 'zm_ss'
+att.loc[(att['zm2019'] == 1) & (att['ss2019'] == 0) & (att['ew2019'] == 1), 'infest_cate'] = 'zm_ew'
+att.loc[(att['zm2019'] == 0) & (att['ss2019'] == 1) & (att['ew2019'] == 1), 'infest_cate'] = 'ss_ew'
+att.loc[(att['zm2019'] == 1) & (att['ss2019'] == 1) & (att['ew2019'] == 1), 'infest_cate'] = 'zm_ss_ew'
+att.drop(['zm2019', 'ss2019', 'ew2019'], axis = 1, inplace = True)
 
+# att.to_csv('data/Annual boater net2/lake_data.csv', index = False)
 
 for ct in ['ramsey', 'crow wing', 'stearns', 'meeker']:
 	boatdf = extract_sim_boat(att, county = ct)
 	boatdf.to_csv('data/Annual boater net2/' + ct + '.csv', index = False)
-
-
-
 
 
 
