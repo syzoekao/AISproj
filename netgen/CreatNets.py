@@ -185,8 +185,9 @@ pred_by_lakes.to_csv('data/Annual boater net/prediction by lakes.csv', index = F
 
 
 '''
-creating network for calibration (weekly)
+creating average network for calibration (weekly)
 '''
+
 import numpy as np
 from scipy.misc import comb
 import scipy
@@ -194,55 +195,42 @@ from itertools import product
 import pandas as pd
 import json
 import timeit
-import statsmodels
 import os
 os.chdir("/Users/szu-yukao/Documents/FishProject/virsim")
 cwd = os.getcwd()
 print(cwd)
 
 att = pd.read_csv('data/lake_attribute.csv')
-att = att[['dow', 'lake_name', 'acre', 'utm_x', 'utm_y', 'county', 'county.name', 'infest', 'inspect', \
-'infest.zm', 'infest.ss', 'zm_suit', 'ss_suit', 'id']]
-traffic = pd.read_csv("data/traffics.csv")
-att = pd.merge(att, traffic[['DOW', 'boats']], how = 'left', left_on = 'dow', right_on = 'DOW')
-att.columns = ['dow', 'lake_name', 'acre', 'utm_x', 'utm_y', 'county', 'county.name', 'infest', 'inspect', 
-'infest.zm', 'infest.ss', 'zm_suit', 'ss_suit', 'id', 'DOW', 'boat_ann']
+boat_csv = pd.read_csv('data/Annual boater net/boats1.csv')
+boat_csv[['weight1']] = boat_csv[['weight']]
+boat_csv.drop(["weight"], axis = 1, inplace = True)
 
-p_self = pd.read_csv('data/p_self_boat.csv')
-weight = np.load('data/avg_weight.npy')
-np.fill_diagonal(weight, 0)
+for j in range(2, 21): 
+	tmp_csv = pd.read_csv('data/Annual boater net/boats' + str(j) + '.csv')
+	tmp_csv[['weight' + str(j)]] = tmp_csv[['weight']]
+	tmp_csv.drop(["weight"], axis = 1, inplace = True)
+	boat_csv = pd.merge(boat_csv, tmp_csv, how = 'outer', on = ['dow_origin', 'dow_destination'])
 
-tot = np.round(att[['boat_ann']])
-p_out = 1-p_self
+boat_csv.fillna(0, inplace = True)
+boat_csv['weight'] = boat_csv[['weight' + str(x) for x in range(1, 21)]].mean(axis=1)
+boat_csv = boat_csv[boat_csv.weight >= 0.4]
+boat_csv['weight'] = boat_csv['weight'] / 26
 
-# dummy = (weight > 1)
-# weight = dummy*weight
-sum_weight = np.sum(weight, axis = 1)
-sum_weight = np.tile(sum_weight, (weight.shape[0], 1)).T 
-prop_weight = weight/sum_weight
-# prop_weight[np.isnan(prop_weight)] = 0
-tmp = tot['boat_ann']*p_out['p_self_boat']
-tmp = np.tile(tmp, (weight.shape[0], 1)).T
+boat_csv = boat_csv[['dow_origin', 'dow_destination', 'weight']]
 
-boat_net = prop_weight*tmp
-
-tmp_diag = np.array(tot['boat_ann']*p_self['p_self_boat'])
-kk = np.diag_indices(boat_net.shape[0])
-boat_net[kk[0], kk[1]] = tmp_diag
-
-boat_net = boat_net * (boat_net >= 1)
-boat_net = boat_net/26 # rescale to weekly boats
-boat_net = np.ceil(boat_net).astype(int)
-
-np.save("data/boat_net", boat_net)
+boat_csv = pd.merge(boat_csv, att[['dow', 'id']], how = 'left', left_on = 'dow_origin', right_on = 'dow')
+boat_csv.drop(["dow", "dow_origin"], axis = 1, inplace = True)
+boat_csv.rename({'id': 'id_origin'}, axis = 1, inplace = True)
+boat_csv = pd.merge(boat_csv, att[['dow', 'id']], how = 'left', left_on = 'dow_destination', right_on = 'dow')
+boat_csv.drop(["dow", "dow_destination"], axis = 1, inplace = True)
+boat_csv.rename({'id': 'id_destination'}, axis = 1, inplace = True)
 
 boat_dict = dict()
 # make boater net dictionary
-for ix_o in range(boat_net.shape[0]): 
+for ix_o in range(att.shape[0]): 
 	# ix_o = 0
-	weight = boat_net[ix_o]
-	ix_d = np.where(weight >= 1)[0].tolist()
-	weight = weight[ix_d].tolist()
+	ix_d = boat_csv.ix[boat_csv['id_origin'] == ix_o][['id_destination']].to_numpy().T[0]
+	weight = boat_csv.ix[boat_csv['id_origin'] == ix_o][['weight']].to_numpy().T[0]
 	ix_d = [str(x) for x in ix_d]
 	if len(ix_d) > 0: 
 		temp = {str(ix_o): dict(zip(ix_d, weight))}
@@ -270,55 +258,25 @@ cwd = os.getcwd()
 print(cwd)
 
 att = pd.read_csv('data/lake_attribute.csv')
-att = att[['dow', 'lake_name', 'acre', 'utm_x', 'utm_y', 'county', 'county.name', 'infest', 'inspect', \
-'infest.zm', 'infest.ss', 'zm_suit', 'ss_suit', 'id']]
-traffic = pd.read_csv("data/traffics.csv")
-att = pd.merge(att, traffic[['DOW', 'boats']], how = 'left', left_on = 'dow', right_on = 'DOW')
-att.columns = ['dow', 'lake_name', 'acre', 'utm_x', 'utm_y', 'county', 'county.name', 'infest', 'inspect', 
-'infest.zm', 'infest.ss', 'zm_suit', 'ss_suit', 'id', 'DOW', 'boat_ann']
-tot = np.round(att['boat_ann'])
-logit = np.load('data/logit.npy')
-gamma = np.load('data/gamma_pred.npy')
-p_self = pd.read_csv('data/p_self_boat.csv')
-
-inspID = att.loc[att['inspect'] == 1, 'id'].values.tolist()
-
-del traffic
 
 for j in range(1, 21): 
 	print(j)
 	aa = timeit.default_timer()
-	temp_dum = np.random.binomial(n = 1, p = logit)
-	# print(timeit.default_timer()-aa)
-	np.fill_diagonal(temp_dum, 1)
-
-	out_net = gamma*temp_dum
-	sum_out = np.sum(out_net, axis = 1)
-	sum_out = np.tile(sum_out, (out_net.shape[0], 1)).T 
-	self_loop = np.tile(p_self.values.T, (out_net.shape[0], 1)).T 
-	p_out = out_net/sum_out * (1-self_loop)
-	p_out[np.isnan(p_out)] = 0
-
-	kk = np.diag_indices(p_out.shape[0])
-	p_out[kk[0], kk[1]] = p_self.values.T
-
-	tot_mat = np.tile(tot.values.T, (out_net.shape[0], 1)).T
-
-	boat_net = tot_mat*p_out
-	boat_net[np.isnan(boat_net)] = 0
-
-	boat_net[np.where((boat_net<1) & (boat_net>0))] = 0
-	small_ix = np.where((boat_net<26) & (boat_net>0))
-
-	boat_net = np.round(boat_net/26, 0)
+	boat_csv = pd.read_csv('data/Annual boater net/boats' + str(j) + '.csv')
+	boat_csv = pd.merge(boat_csv, att[['dow', 'id']], how = 'left', left_on = 'dow_origin', right_on = 'dow')
+	boat_csv.drop(["dow", "dow_origin"], axis = 1, inplace = True)
+	boat_csv.rename({'id': 'id_origin'}, axis = 1, inplace = True)
+	boat_csv = pd.merge(boat_csv, att[['dow', 'id']], how = 'left', left_on = 'dow_destination', right_on = 'dow')
+	boat_csv.drop(["dow", "dow_destination"], axis = 1, inplace = True)
+	boat_csv.rename({'id': 'id_destination'}, axis = 1, inplace = True)
+	boat_csv[['weight']] = boat_csv[['weight']] / 26
 
 	boat_dict = dict()
 	# make boater net dictionary
-	for ix_o in range(boat_net.shape[0]): 
+	for ix_o in range(att.shape[0]): 
 		# ix_o = 0
-		weight = boat_net[ix_o]
-		ix_d = np.where(weight >= 1)[0].tolist()
-		weight = weight[ix_d].tolist()
+		ix_d = boat_csv.ix[boat_csv['id_origin'] == ix_o][['id_destination']].to_numpy().T[0]
+		weight = boat_csv.ix[boat_csv['id_origin'] == ix_o][['weight']].to_numpy().T[0]
 		ix_d = [str(x) for x in ix_d]
 		if len(ix_d) > 0: 
 			temp = {str(ix_o): dict(zip(ix_d, weight))}
@@ -326,24 +284,6 @@ for j in range(1, 21):
 
 	with open('data/boat_dict'+str(j)+'.txt', 'w') as fout:
 	    json.dump(boat_dict, fout)
-
-	temp_prob = np.zeros(logit.shape)
-	temp_prob[small_ix] = logit[small_ix]
-	temp_prob[temp_prob < 0.005] = 0
-	small_prob = dict()
-
-	for ix_o in range(temp_prob.shape[0]): 
-		# ix_o = 0
-		weight = temp_prob[ix_o]
-		ix_d = np.where(weight > 0)[0].tolist()
-		weight = weight[ix_d].tolist()
-		ix_d = [str(x) for x in ix_d]
-		if len(ix_d) > 0: 
-			temp = {str(ix_o): dict(zip(ix_d, weight))}
-			small_prob.update(temp)
-
-	with open('data/small_prob'+str(j)+'.txt', 'w') as fout:
-	    json.dump(small_prob, fout)
 
 	print(timeit.default_timer() - aa)
 
@@ -368,6 +308,16 @@ river = pd.merge(river, att[['dow', 'id']], how = 'left', left_on = 'dow.destina
 river = river[['dow.origin', 'dow.destination', 'weight', 'inverse_weight', 'fromID', 'id']]
 river.columns = ['dow.origin', 'dow.destination', 'weight', 'inverse_weight', 'fromID', 'toID']
 
+dows_before_rm = np.unique(np.concatenate((river[['dow.origin']].to_numpy().T[0], 
+	river[['dow.destination']].to_numpy().T[0])))
+
+river.dropna(how = 'any', inplace = True)
+
+dows_after_rm = np.unique(np.concatenate((river[['dow.origin']].to_numpy().T[0], 
+	river[['dow.destination']].to_numpy().T[0])))
+
+print(dows_before_rm.shape[0])
+print(dows_after_rm.shape[0])
 
 river_mat = np.empty((n_row, n_row))
 
@@ -437,8 +387,8 @@ cwd = os.getcwd()
 print(cwd)
 
 
-def extract_sim_boat(att, county, path = 'data/Annual boater net2'): 
-	# county = 'crow wing'
+def extract_sim_boat(att, county, path = 'data/Annual boater net'): 
+	# county = 'stearns'
 	# path = 'data/Annual boater net2'
 	if county == 'ramsey': 
 		att.loc[att['dow'] == 82016700, ['county', 'county_name']] = [62, county]
@@ -507,7 +457,8 @@ def extract_sim_boat(att, county, path = 'data/Annual boater net2'):
 		boatdf = boatdf.rename(columns = {'weight': 'weight'+str(i)})
 		boatdf['weight'+str(i)].fillna(0, inplace = True)
 
-	boatdf['infest_origin']
+	boatdf.loc[boatdf['infest_origin'].isnull(), 'infest_origin'] = boatdf.loc[boatdf['infest_origin'].isnull(), 'dow_origin']
+	boatdf.loc[boatdf['infest_destination'].isnull(), 'infest_destination'] = boatdf.loc[boatdf['infest_destination'].isnull(), 'dow_destination']
 	return boatdf
 
 
@@ -534,7 +485,7 @@ att.drop(['zm2019', 'ss2019', 'ew2019'], axis = 1, inplace = True)
 
 for ct in ['ramsey', 'crow wing', 'stearns', 'meeker']:
 	boatdf = extract_sim_boat(att, county = ct)
-	boatdf.to_csv('data/Annual boater net2/' + ct + '.csv', index = False)
+	boatdf.to_csv('data/Annual boater net/' + ct + '.csv', index = False)
 
 
 
