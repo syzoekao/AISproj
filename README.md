@@ -3,7 +3,7 @@ Predictive boater movements and simulation of lake-level risk of infestation in 
 
 ### Post-calibration simulation
 
-The file [simulation1.py](https://github.com/syzoekao/AISproj/blob/master/simulation1.py) is an example file used to simulate the spread of AIS across lakes in MN. The data used in this file are provided in [data](https://github.com/syzoekao/AISproj/tree/master/data). 
+The file [simulation1.py](https://github.com/syzoekao/AISproj/blob/master/simulation1.py) is an example file used to simulate the spread of AIS across lakes in MN. There were 100 simulation files to run 100 simulations per file. The data used in this file are provided in [data](https://github.com/syzoekao/AISproj/tree/master/data). 
 
 Data include: 
 
