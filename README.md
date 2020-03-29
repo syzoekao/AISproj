@@ -17,7 +17,11 @@ This is based on the infestation status in the end of 2018.
 
 3. Dictionary for boater movement
 
-There are 20 samples of the boater movement dictionary. The boater movements are organizaed as nested dictionary. An example is {"0": {"1": 0.4615, "2": 0.1923, "3": 0.1211}}. The first key "0" is the origin lake according to the id assigned in the `lake_attribute.csv` file. The second keys "1", "2", and "3" are the destination lakes (following the id assigned in the `lake_attribute.csv` too). The values 0.4615, 0.1923, and 0.1211 are the weekly number of boaters traveling from origin lake ("0") to the destination lakes ("1", "2", "3"). 
+There are 20 samples of the boater movement dictionary. The boater movements are organizaed as nested dictionary. An example is 
+
+{"0": {"1": 0.4615, "2": 0.1923, "3": 0.1211}} 
+
+The first key "0" is the origin lake according to the id assigned in the `lake_attribute.csv` file. The second keys "1", "2", and "3" are the destination lakes (following the id assigned in the `lake_attribute.csv` too). The values 0.4615, 0.1923, and 0.1211 are the weekly number of boaters traveling from origin lake ("0") to the destination lakes ("1", "2", "3"). 
 
 4. [River network](https://github.com/syzoekao/AISproj/blob/master/data/river_net_sim.csv)
 
