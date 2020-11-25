@@ -35,3 +35,5 @@ lib/python3.7/*
 lib/python3.7/site-packages/*
 !lib/python3.7/site-packages/AISsim/
 !lib/python3.7/site-packages/AISsim/tests/
+!lib/python3.7/site-packages/ABCSMC/
+.Rproj.user
