@@ -24,7 +24,7 @@ import seaborn as sns
 myenv = "mylaptop"
 abcdata.SetDirectory(myenv)
 
-gen_t = 6
+gen_t = 7
 
 pars_name = abcdata.DrawParams().pars_name
 
