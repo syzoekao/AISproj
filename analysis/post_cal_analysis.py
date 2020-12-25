@@ -39,6 +39,11 @@ sim_target = np.array(outcomes['sim_target'])
 pars = pd.DataFrame(pars, 
 	columns = pars_name)
 
+samples = pars[['factor_ss', 'e_violate_zm', 'e_violate_ss', 'river_inf_zm', 'river_inf_ss', 'back_suit_zm', 'back_suit_ss']]
+samples['wgt'] = wgt
+samples = np.array(samples)
+np.save("data/param_sample", samples)
+
 pars["weight"] = wgt
 pars["violate_ss"] = 0.18 * pars['factor_ss'] * pars['e_violate_ss']
 pars["violate_zm"] = 0.0075 * pars['e_violate_zm']
@@ -166,7 +171,6 @@ tmp = corner.corner(samples[:,:], labels=['violate_ss', 'river_inf_ss', 'violate
 plt.savefig('results/corner_plot (gen' + str(gen_t) + ').eps', format='eps', dpi=1200)
 
 
-
 def mysum(x): 
 	return np.mean(x, axis = 0).tolist(), np.percentile(x, q = 10, axis = 0).tolist(), \
 		np.percentile(x, q = 90, axis = 0).tolist(), np.std(x, axis = 0).tolist()
@@ -239,8 +243,6 @@ ax2.set_ylabel('# of lakes',fontsize=14)
 plt.tight_layout()
 plt.savefig('results/summary plot annual_no prediction (gen' + str(gen_t) + ').eps', format='eps', dpi=1000)
 plt.close()
-
-
 
 
 
