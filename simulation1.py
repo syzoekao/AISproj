@@ -89,7 +89,7 @@ for i in range(1, 101):
 	print(i) 
 
 	tmp_param = sim_param[np.random.choice(np.arange(sim_param.shape[0]), 
-		size = 1, p = sim_param[:, (sim_param.shape[1] - 1)]), :(sim_param.shape[1] - 1)][0]
+		size = 1), :(sim_param.shape[1] - 1)][0]
 
 	aa = timeit.default_timer() 
 	ann_out, res_zm0, infest_zm0, tmp_suit_zm0, res_ss0, infest_ss0, tmp_suit_ss0 = util.pre_infest_outcome_func(factor_ss = tmp_param[0], 
