@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.misc import comb
+from scipy.special import comb
 from itertools import product
 import pandas as pd
 import copy
@@ -165,10 +165,10 @@ plt.close()
 samples = pars[['violate_ss', 'river_inf_ss', 'violate_zm', 'river_inf_zm', 
 	'back_suit_zm', 'back_suit_ss']].to_numpy()
 
-# samples = samples[0]
-tmp = corner.corner(samples[:,:], labels=['violate_ss', 'river_inf_ss', 'violate_zm', 'river_inf_zm', 
-	'back_suit_zm', 'back_suit_ss'])
-plt.savefig('results/corner_plot (gen' + str(gen_t) + ').eps', format='eps', dpi=1200)
+# # samples = samples[0]
+# tmp = corner.corner(samples[:,:], labels=['violate_ss', 'river_inf_ss', 'violate_zm', 'river_inf_zm', 
+# 	'back_suit_zm', 'back_suit_ss'])
+# plt.savefig('results/corner_plot (gen' + str(gen_t) + ').eps', format='eps', dpi=1200)
 
 
 def mysum(x): 
