@@ -15,7 +15,7 @@ import ABCSMC.managefile as mfile
 import ABCSMC.SampleTasks as task
 import matplotlib as mpl
 print(mpl.rcParams['backend'])
-mpl.use('TkAgg')
+# mpl.use('TkAgg')
 import matplotlib.pyplot as plt
 plt.get_backend()
 import corner
@@ -164,6 +164,9 @@ plt.close()
 
 samples = pars[['violate_ss', 'river_inf_ss', 'violate_zm', 'river_inf_zm', 
 	'back_suit_zm', 'back_suit_ss']].to_numpy()
+
+pars[['violate_ss', 'river_inf_ss', 'violate_zm', 'river_inf_zm', 
+	'back_suit_zm', 'back_suit_ss', 'weight']].to_csv('results/pars_for_r.csv', index = False)
 
 # # samples = samples[0]
 # tmp = corner.corner(samples[:,:], labels=['violate_ss', 'river_inf_ss', 'violate_zm', 'river_inf_zm', 
