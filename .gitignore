@@ -28,16 +28,6 @@ share/
 etc/
 boater_gen_out/
 boaterdocs/
-
-# exceptions
-!lib/
 lib/*
-!lib/python3.9/
-lib/python3.9/*
-!lib/python3.9/site-packages/
-lib/python3.9/site-packages/*
-!lib/python3.9/site-packages/AISsim/
-!lib/python3.9/site-packages/AISsim/tests/
-!lib/python3.9/site-packages/ABCSMC/
 .Rproj.user
 .Rhistory
